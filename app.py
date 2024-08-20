@@ -47,7 +47,7 @@ def message():
     logger.debug("Root route accessed")
     return jsonify({"message": "Hello from Flask!"})
 
-@app.route('/api/nearby_hospitals', methods=['GET'])
+@app.route('/nearby_hospitals', methods=['GET'])
 def get_nearby_hospitals():
     logger.debug("/api/nearby_hospitals endpoint triggered")
     try:
@@ -68,25 +68,8 @@ def get_nearby_hospitals():
         return jsonify({"error": str(e)}), 500
 
 
-# Route for nearby hospitals
-@app.route('/api/nearby_hospitals', methods=['GET'])
-def get_nearby_hospitals():
-    try:
-        lat = float(request.args.get('lat'))
-        lng = float(request.args.get('lng'))
-        
-        hospitals_ref = ref.child('hospitals')
-        hospitals = hospitals_ref.order_by_child('lat').start_at(lat - 0.05).end_at(lat + 0.05).get()
-        
-        if hospitals:
-            return add_no_cache_headers(jsonify(list(hospitals.values())))
-        else:
-            return add_no_cache_headers(jsonify([]))
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
 # Route to add hospitals data
-@app.route('/api/add-hospitals', methods=['POST'])
+@app.route('/add-hospitals', methods=['POST'])
 def add_hospitals():
     try:
         hospitals_data = request.json.get('hospitals')
@@ -97,7 +80,7 @@ def add_hospitals():
     except Exception as e:
         return jsonify({"error": str(e)}), 400
 
-@app.route('/api/diseases/<letter>', methods=['GET'])
+@app.route('/diseases/<letter>', methods=['GET'])
 def get_diseases_by_letter(letter):
     try:
         # Assuming you have a collection of diseases stored in Firebase
@@ -112,7 +95,7 @@ def get_diseases_by_letter(letter):
 
 
 # Route for news
-@app.route('/api/news', methods=['GET'])
+@app.route('/news', methods=['GET'])
 def get_news():
     try:
         news_ref = ref.child('news')
@@ -123,7 +106,7 @@ def get_news():
 
 
 
-@app.route('/api/doctors', methods=['GET'])
+@app.route('/doctors', methods=['GET'])
 def get_doctors():
     try:
         doctors_ref = ref.child('doctors')
@@ -133,7 +116,7 @@ def get_doctors():
         return jsonify({"error": str(e)}), 500
 
 # Route to add doctor data
-@app.route('/api/add-doctor', methods=['POST'])
+@app.route('/add-doctor', methods=['POST'])
 def add_doctor():
     try:
         doctor_data = request.json
@@ -144,7 +127,7 @@ def add_doctor():
         return jsonify({"error": str(e)}), 400
 
 # Route to add appointment data
-@app.route('/api/add-appointment', methods=['POST'])
+@app.route('/add-appointment', methods=['POST'])
 def add_appointment():
     try:
         appointment_data = request.json
@@ -155,7 +138,7 @@ def add_appointment():
         return jsonify({"error": str(e)}), 400
 
 # Route to store sensor data
-@app.route('/api/sensor_data', methods=['GET'])
+@app.route('/sensor_data', methods=['GET'])
 def store_sensor_data():
     try:
         heartrate = request.args.get('heartrate')
@@ -172,29 +155,6 @@ def store_sensor_data():
 
         return jsonify({"success": True, "sensor_data": sensor_data}), 200
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
-
-@app.route('/api/sensor_data', methods=['GET'])
-def store_sensor_data():
-    logger.debug("/api/sensor_data endpoint triggered")
-    try:
-        heartrate = request.args.get('heartrate')
-        blood_oxygen = request.args.get('blood_oxygen')
-
-        logger.info(f"Received sensor data - Heartrate: {heartrate}, Blood Oxygen: {blood_oxygen}")
-
-        sensor_data = {
-            'heartrate': heartrate,
-            'blood_oxygen': blood_oxygen
-        }
-
-        ref.child('sensor_data').set(sensor_data)
-        logger.debug("Sensor data stored in Firebase")
-
-        return jsonify({"success": True, "sensor_data": sensor_data}), 200
-    except Exception as e:
-        logger.error(f"Error in store_sensor_data: {str(e)}")
         return jsonify({"error": str(e)}), 500
 
 if __name__ == "__main__":
