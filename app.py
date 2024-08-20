@@ -140,8 +140,8 @@ def add_appointment():
 # Route to store sensor data
 @app.route('/test', methods=['GET'])
 def test():
-        logger.debug("Root route accessed")
-        return jsonify({"message": "Hello from Flask!"})
+        logger.debug("Root test accessed")
+        return jsonify({"message": "Hello tst Flask!"})
 
 
 @app.route('/sensor_data', methods=['GET'])
