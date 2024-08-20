@@ -140,6 +140,7 @@ def add_appointment():
 # Route to store sensor data
 @app.route('/sensor_data', methods=['GET'])
 def store_sensor_data():
+    logger.debug("/sensor data accessed")
     try:
         heartrate = request.args.get('heartrate')
         blood_oxygen = request.args.get('blood_oxygen')
@@ -152,9 +153,10 @@ def store_sensor_data():
 
         # Store or update the sensor data in Firebase
         ref.child('sensor_data').set(sensor_data)
-
+        logger.debug("Added Data ")
         return jsonify({"success": True, "sensor_data": sensor_data}), 200
     except Exception as e:
+        logger.debug("Error "+e)
         return jsonify({"error": str(e)}), 500
 
 if __name__ == "__main__":
